@@ -10,7 +10,11 @@ from datetime import datetime
 consumer_key = "" # api key
 consumer_secret = "" # api secret key"
 
+<<<<<<< HEAD
 acess_token = "-mJloNVTxXBd4Th0C3XyMyKUrk5BZLo" # Access Token
+=======
+acess_token = "" # Access Token
+>>>>>>> 35503c53da70c8ad8ddf044a2816c8a791834909
 acess_token_secret = "" # Access Token Secret
 
 # Definir arquivo de saída p/ armazenar os tweets coletados
