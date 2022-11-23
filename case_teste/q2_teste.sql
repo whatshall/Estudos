@@ -12,7 +12,8 @@ WITH cred AS (
 		   id
 	FROM dbadmin.tb_cases
 	WHERE TRUE 
-	AND date_ref IS NOT NULL),
+	AND date_ref <> ''
+	 ),
 -------------------------
 	 chamados AS (
 	SELECT ca.dt_chamado,
@@ -23,19 +24,25 @@ WITH cred AS (
 	LEFT JOIN cred AS cr
 		ON ca.accountid = cr.accountid
 	GROUP BY 1, 3, 4
-	ORDER BY 1 DESC)
+	ORDER BY 1 DESC),
 -------------------------
-	SELECT DISTINCT
-		dt_chamado,
-		SUM(qtd_chamados) qtd_chamados,
-		--dt_credenciamento,
-		SUM(qtd_cred) qtd_cred,
+	  mes_anterior AS (
+	 SELECT dt_chamado,
 		LAG(dt_chamado,1) OVER (
 			ORDER BY dt_chamado
 			) mes_anterior
-	FROM chamados
-	GROUP BY dt_chamado, dt_credenciamento
-	ORDER BY dt_chamado DESC
+	 FROM chamados
+	 GROUP BY dt_chamado
+	 ORDER BY dt_chamado DESC)
+-------------------------
+	SELECT CAST(c.dt_chamado AS DATE) AS dt_chamado, SUM(c.qtd_chamados), SUM(c.qtd_cred), CAST(c.dt_credenciamento AS DATE) AS dt_credenciamento, CAST(m.mes_anterior AS DATE) AS mes_anterior
+	FROM chamados c
+	LEFT JOIN mes_anterior m
+		ON c.dt_chamado = m.dt_chamado
+	WHERE TRUE
+	AND c.dt_credenciamento = m.mes_anterior
+	GROUP BY c.dt_chamado, c.dt_credenciamento, m.mes_anterior
+	ORDER BY c.dt_chamado DESC, c.dt_credenciamento DESC
 
 	
 --UPDATE dbadmin.tb_creds SET cred_date = REPLACE(cred_date, '/','-')

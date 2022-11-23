@@ -1,7 +1,8 @@
+CREATE VIEW dbadmin.vw_cluster AS
 WITH 
 cases AS (
 	SELECT DISTINCT 
-		   DATE_TRUNC('month', CAST(date_ref AS DATE)) AS dt_chamado, 
+		   CAST(date_ref AS DATE) AS dt_chamado,--DATE_TRUNC('month', CAST(date_ref AS DATE)) AS dt_chamado, 
 		   CASE 
 			WHEN assunto LIKE ('Logística%') THEN 'Logística' 
 			WHEN assunto LIKE ('Produto%') THEN 'Produto' 
@@ -16,16 +17,19 @@ cases AS (
 		   COUNT(accountid) AS qtd,
 		   accountid
 	FROM dbadmin.tb_cases
+	WHERE TRUE 
+	AND date_ref <> ''
 	GROUP BY 1, 2, 4
 	ORDER BY 1 DESC),
 creds AS (
 	SELECT DISTINCT 
-		   cred_date, 
+		   cred_date, 	
 		   max_machine, 
 		   accountid
 	FROM dbadmin.tb_creds)
 -------------------------
-SELECT TO_CHAR(ca.dt_chamado, 'Month') AS "month", 
+SELECT CAST(ca.dt_chamado AS DATE) AS dt_chamado,
+	   TO_CHAR(ca.dt_chamado, 'Month') AS "month", 
 	   motivo,
 	   cr.max_machine, 
 	   SUM(qtd) AS qtd_chamados

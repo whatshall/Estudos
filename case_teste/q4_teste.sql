@@ -1,19 +1,14 @@
--- i) o volume de chamados por semana dos últimos três meses para cada cluster de clientes proposto na questão 3. 
-WITH cases AS (
-	SELECT DISTINCT 
-		   DATE_TRUNC('week', CAST(date_ref AS DATE)) AS dt_chamado, 
-		   assunto,
-		   COUNT(accountid) AS qtd
-	FROM dbadmin.tb_cases
-	GROUP BY 1, 2
-	ORDER BY 1 DESC)
--------------------------
-SELECT dt_chamado, assunto, SUM(qtd)
-FROM cases AS ca
+-- i) o volume de chamados por semana dos últimos três meses para cada cluster de clientes proposto na questão 3.
+SELECT DISTINCT 
+		   CAST(DATE_TRUNC('week', dt_chamado) AS DATE) AS dt_chamado,
+	       motivo, max_machine,
+		   SUM(qtd_chamados) AS qtd_chamados
+FROM dbadmin.vw_cluster
 WHERE TRUE
 AND dt_chamado >= '2020-08-01'
-GROUP BY dt_chamado, assunto
-ORDER BY dt_chamado DESC
+AND motivo IN ('Aplicativo', 'Logística', 'Produto')
+GROUP BY 1, 2, 3
+ORDER BY 1 ASC
 -------------------------
 -- ii) uma série histórica dia a dia, que para cada dia retorne o número de chamados referentes aos últimos 30 dias
 WITH cases AS (
